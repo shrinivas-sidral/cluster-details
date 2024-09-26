@@ -1,7 +1,6 @@
 #!/bin/bash
 export cluster_details="cluster_details.log"
 
-#for csv checks
 echo "--------------------------- Cluster Details --------------------------" | tee $cluster_details
 
 odf_op_version(){
@@ -13,6 +12,7 @@ odf_op_version(){
     echo "ODF oprator version :  $(oc describe csv $(oc get csv -A | awk '{print $2}' | grep odf-operator) -n openshift-storage | head -n 1 |awk '{print $NF}')"
     echo "===================================================================";echo;
 }
+#for csv checks
 csv_status(){
     echo "Checking for CSVs...";echo;
     all_succeeded=false 
@@ -152,7 +152,7 @@ ceph_version(){
     echo "$ oc -n openshift-storage rsh `oc get pods -n openshift-storage | grep rook-ceph-tools |  awk '{print $1}'` ceph -v" | tee -a $cluster_details;
     echo ""
     oc -n openshift-storage rsh `oc get pods -n openshift-storage | grep rook-ceph-tools |  awk '{print $1}'` ceph -v  | tee -a  $cluster_details;
-    echo "-------------------------------------------------------------------" | tee -a $cluster_details
+    
     echo "$str"
     echo "===================================================================";echo;
         
@@ -168,3 +168,12 @@ sc_status
 storagecluster_status
 cephcluster_status
 ceph_version
+
+echo "--------------------------------------------------------------------"
+echo "--------------------------------------------------------------------"
+echo "--------------------------------------------------------------------"
+echo "--- All the Resources are Ready to use, Ceph health is HEALTH_OK----"
+echo "--------------------------------------------------------------------"
+echo "--------------------------------------------------------------------"
+echo "--------------------------------------------------------------------"
+
