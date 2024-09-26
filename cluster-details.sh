@@ -134,8 +134,8 @@ cephcluster_status(){
         echo "Ceph health the is $str."
         echo "===================================================================";echo;
     else
-      echo "Ceph health the is ."
       echo "CepheCluster health is $str. Checking again..."
+      sleep 30
     fi
     done
 }
