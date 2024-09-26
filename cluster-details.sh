@@ -73,11 +73,17 @@ pods_status(){
 #for pv status check
 pv_status(){
     echo "Checking for PVs...";echo;
+    sc=$(oc get pv -n openshift-storage --no-headers 2>&1)
+    if [[ -z "$sc" ]] ; then
+        echo "PVs resources not found in openshift-storage namespace."
+        sleep 30
+    else
     echo "$ oc get pv -n openshift-storage" | tee -a $cluster_details;
     oc get pv -n openshift-storage  | tee -a  $cluster_details;
     echo "-------------------------------------------------------------------" | tee -a $cluster_details
     echo "All PVs are attached.."
     echo "===================================================================";echo;
+    fi
     
 }
 
@@ -105,10 +111,13 @@ storagecluster_status(){
     echo "Checking for StorageCluster status...";echo;
     all_succeeded=false  
     while [ "$all_succeeded" = false ]; do
-
+    sc=$(oc get storagecluster -n openshift-storage --no-headers 2>&1)
     if  oc get storagecluster -n openshift-storage --no-headers | awk '{ print $3 }' | grep -v "^Ready$" > /dev/null; then
         echo "StorageCluster in Progressing state. Checking again..."
-        sleep 30  
+        sleep 30
+    elif [[ -z "$sc" ]] ; then
+        echo "storagecluster resources not found in openshift-storage namespace."
+        sleep 30
     else
         all_succeeded=true
         echo "$ oc get storagecluster -n openshift-storage" | tee -a $cluster_details;
