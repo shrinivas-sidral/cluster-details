@@ -73,49 +73,60 @@ pods_status(){
 #for pv status check
 pv_status(){
     echo "Checking for PVs...";echo;
-    sc=$(oc get pv -n openshift-storage --no-headers)
-    if [[ -z "$sc" ]] ; then
-        echo "PVs resources not found in openshift-storage namespace."
-        sleep 30
-    else
-    echo "$ oc get pv -n openshift-storage" | tee -a $cluster_details;
-    oc get pv -n openshift-storage  | tee -a  $cluster_details;
-    echo "-------------------------------------------------------------------" | tee -a $cluster_details
-    echo "All PVs are attached.."
-    echo "===================================================================";echo;
-    fi
-    
+    all_succeeded=false  
+    while [ "$all_succeeded" = false ]; do
+        sc=$(oc get pv -n openshift-storage --no-headers)
+        if [[ -z "$sc" ]] ; then
+            echo "PVs resources not found in openshift-storage namespace."
+            sleep 30
+        else
+            all_succeeded=true
+            echo "$ oc get pv -n openshift-storage" | tee -a $cluster_details;
+            oc get pv -n openshift-storage  | tee -a  $cluster_details;
+            echo "-------------------------------------------------------------------" | tee -a $cluster_details
+            echo "All PVs are attached.."
+            echo "===================================================================";echo;
+        fi
+    done
 }
 
 #for pvc status check
 pvc_status(){
     echo "Checking for PVCs...";echo;
-    sc=$(oc get pvc -n openshift-storage)
-    if [[ -z "$sc" ]] ; then
-        echo "PVCs resources not found in openshift-storage namespace."
-        sleep 30
-    else
-    echo "$ oc get pvc -n openshift-storage" | tee -a $cluster_details;
-    oc get pvc -n openshift-storage  | tee -a  $cluster_details;
-    echo "-------------------------------------------------------------------" | tee -a $cluster_details
-    echo "All PVCs are attached.."
-    echo "===================================================================";echo;
-    fi
+    all_succeeded=false  
+    while [ "$all_succeeded" = false ]; do
+        sc=$(oc get pvc -n openshift-storage)
+        if [[ -z "$sc" ]] ; then
+            echo "PVCs resources not found in openshift-storage namespace."
+            sleep 30
+        else
+            all_succeeded=true
+            echo "$ oc get pvc -n openshift-storage" | tee -a $cluster_details;
+            oc get pvc -n openshift-storage  | tee -a  $cluster_details;
+            echo "-------------------------------------------------------------------" | tee -a $cluster_details
+            echo "All PVCs are attached.."
+            echo "===================================================================";echo;
+        fi
+    done
 }
 #for sc status check
 sc_status(){
     echo "Checking for StorageClass...";echo;
-    sc=$(oc get sc -n openshift-storage --no-headers)
-    if [[ -z "$sc" ]] ; then
-        echo "StorageClass resources not found in openshift-storage namespace."
-        sleep 30
-    else
-    echo "$ oc get sc -n openshift-storage" | tee -a $cluster_details;
-    oc get sc -n openshift-storage  | tee -a  $cluster_details;
-    echo "-------------------------------------------------------------------" | tee -a $cluster_details
-    echo "StorageClass OK.."
-    echo "===================================================================";echo;
-    fi
+    all_succeeded=false  
+    while [ "$all_succeeded" = false ]; do
+        sc=$(oc get sc -n openshift-storage --no-headers)
+        if [[ -z "$sc" ]] ; then
+            echo "StorageClass resources not found in openshift-storage namespace."
+            sleep 30
+        else
+            all_succeeded=true
+            echo "$ oc get sc -n openshift-storage" | tee -a $cluster_details;
+            oc get sc -n openshift-storage  | tee -a  $cluster_details;
+            echo "-------------------------------------------------------------------" | tee -a $cluster_details
+            echo "StorageClass OK.."
+            echo "===================================================================";echo;
+        fi
+    done
 }
 
 #for Storagecluster status check
