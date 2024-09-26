@@ -124,7 +124,7 @@ cephcluster_status(){
     all_succeeded=false
     echo "Checking for Ceph Health...";echo;
     while [ "$all_succeeded" = false ]; do
-
+    oc patch storagecluster ocs-storagecluster -n openshift-storage --type json --patch  '[{ "op": "replace", "path": "/spec/enableCephTools", "value": true }]' > /dev/null
     str=$(oc -n openshift-storage rsh `oc get pods -n openshift-storage | grep rook-ceph-tools |  awk '{print $1}'` ceph health | tr -d '[:space:]')
     if [ $str == "HEALTH_OK" ]; then
         all_succeeded=true
@@ -133,6 +133,11 @@ cephcluster_status(){
         echo "-------------------------------------------------------------------" | tee -a $cluster_details
         echo "Ceph health the is $str."
         echo "===================================================================";echo;
+    
+    elif [ $? -ne 0 ]; then
+      echo "CepheCluster rook-tool-pod is not present. Checking again..."
+      sleep 30
+      
     else
       echo "CepheCluster health is $str. Checking again..."
       sleep 30
