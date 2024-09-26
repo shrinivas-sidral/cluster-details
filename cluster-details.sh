@@ -73,7 +73,7 @@ pods_status(){
 #for pv status check
 pv_status(){
     echo "Checking for PVs...";echo;
-    sc=$(oc get pv -n openshift-storage --no-headers 2>&1)
+    sc=$(oc get pv -n openshift-storage --no-headers)
     if [[ -z "$sc" ]] ; then
         echo "PVs resources not found in openshift-storage namespace."
         sleep 30
@@ -90,20 +90,32 @@ pv_status(){
 #for pvc status check
 pvc_status(){
     echo "Checking for PVCs...";echo;
+    sc=$(oc get pvc -n openshift-storage)
+    if [[ -z "$sc" ]] ; then
+        echo "PVCs resources not found in openshift-storage namespace."
+        sleep 30
+    else
     echo "$ oc get pvc -n openshift-storage" | tee -a $cluster_details;
     oc get pvc -n openshift-storage  | tee -a  $cluster_details;
     echo "-------------------------------------------------------------------" | tee -a $cluster_details
     echo "All PVCs are attached.."
     echo "===================================================================";echo;
+    fi
 }
 #for sc status check
 sc_status(){
-    echo "Checking for storageclass...";echo;
+    echo "Checking for StorageClass...";echo;
+    sc=$(oc get sc -n openshift-storage --no-headers)
+    if [[ -z "$sc" ]] ; then
+        echo "StorageClass resources not found in openshift-storage namespace."
+        sleep 30
+    else
     echo "$ oc get sc -n openshift-storage" | tee -a $cluster_details;
-    oc get sc -n openshift-storage | tee -a  $cluster_details;
+    oc get sc -n openshift-storage  | tee -a  $cluster_details;
     echo "-------------------------------------------------------------------" | tee -a $cluster_details
-    echo "StorageClass ok.."
+    echo "StorageClass OK.."
     echo "===================================================================";echo;
+    fi
 }
 
 #for Storagecluster status check
@@ -111,10 +123,11 @@ storagecluster_status(){
     echo "Checking for StorageCluster status...";echo;
     all_succeeded=false  
     while [ "$all_succeeded" = false ]; do
-    sc=$(oc get storagecluster -n openshift-storage --no-headers 2>&1)
+    sc=$(oc get storagecluster -n openshift-storage --no-headers)
     if  oc get storagecluster -n openshift-storage --no-headers | awk '{ print $3 }' | grep -v "^Ready$" > /dev/null; then
         echo "StorageCluster in Progressing state. Checking again..."
         sleep 30
+
     elif [[ -z "$sc" ]] ; then
         echo "storagecluster resources not found in openshift-storage namespace."
         sleep 30
