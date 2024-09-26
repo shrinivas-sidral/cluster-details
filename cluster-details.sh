@@ -185,7 +185,7 @@ ceph_version(){
     echo "$ oc -n openshift-storage rsh `oc get pods -n openshift-storage | grep rook-ceph-tools |  awk '{print $1}'` ceph -v" | tee -a $cluster_details;
     echo ""
     oc -n openshift-storage rsh `oc get pods -n openshift-storage | grep rook-ceph-tools |  awk '{print $1}'` ceph -v  | tee -a  $cluster_details;
-    
+    echo "-------------------------------------------------------------------" | tee -a $cluster_details
     echo "$str"
     echo "===================================================================";echo;
         
