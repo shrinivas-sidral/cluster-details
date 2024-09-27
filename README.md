@@ -2,7 +2,7 @@
 
 After ODF is deployed to see if all pods are running, ceph is working, storagecluster in ready state, and many other parameters.
 
-All the collected resource logs are stored in `cluster_details.log` file.
+All the collected resource logs are stored in `cluster-details.log` file.
 
 
 ### clone repo

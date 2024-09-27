@@ -1,8 +1,28 @@
 #!/bin/bash
-export cluster_details="cluster_details.log"
+export cluster_details="cluster-details.log"
 
 echo "--------------------------- Cluster Details --------------------------" | tee $cluster_details
 
+#for nodes checks
+nodes_status(){
+    echo "Checking for nodes...";echo;
+    all_succeeded=false 
+    while [ "$all_succeeded" = false ]; do
+    if oc get nodes --no-headers | awk '{print $2}' | grep -v "^Ready$" > /dev/null; then
+        echo "Not all Nodes are in Ready state. Checking again..."
+        sleep 15  
+    else
+        all_succeeded=true
+        echo "$ oc get nodes" | tee -a $cluster_details;
+        oc get nodes | tee -a  $cluster_details;
+        echo "-------------------------------------------------------------------" | tee -a $cluster_details
+        echo "All Nodes are in Ready state."
+        echo "===================================================================";echo;
+    fi
+    done
+}
+
+#for ODf version check
 odf_op_version(){
     echo "Checking for ODF oprator version...";echo;
     echo "$ oc describe csv $(oc get csv -A | awk '{print $2}' | grep odf-operator) -n openshift-storage | head -n 6" | tee -a $cluster_details;
@@ -19,7 +39,7 @@ csv_status(){
     while [ "$all_succeeded" = false ]; do
     if oc get csv -A --no-headers | awk '{print $NF}' | grep -v "^Succeeded$" > /dev/null; then
         echo "Not all CSVs are in Succeeded state. Checking again..."
-        sleep 10  
+        sleep 15  
     else
         all_succeeded=true
         echo "$ oc get csv -A" | tee -a $cluster_details;
@@ -38,7 +58,7 @@ lv_pods_status(){
     while [ "$all_succeeded" = false ]; do
     if  oc get pods -n openshift-local-storage --no-headers | awk '{ print $3 }' | grep -v "^Running$"  > /dev/null; then
         echo "Not all pods are in Running state. Checking again..."
-        sleep 10  
+        sleep 15  
     else
         all_succeeded=true
         echo "$ oc get pods -n openshift-local-storage" | tee -a $cluster_details;
@@ -191,6 +211,8 @@ ceph_version(){
         
 }
 
+#function calls
+nodes_status
 odf_op_version
 csv_status
 lv_pods_status
@@ -202,6 +224,7 @@ storagecluster_status
 cephcluster_status
 ceph_version
 
+#final result
 echo "--------------------------------------------------------------------"
 echo "--------------------------------------------------------------------"
 echo "--------------------------------------------------------------------"
