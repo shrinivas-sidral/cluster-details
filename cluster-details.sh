@@ -185,12 +185,7 @@ cephcluster_status(){
         oc get cephcluster -n openshift-storage | tee -a  $cluster_details;
         echo "-------------------------------------------------------------------" | tee -a $cluster_details
         echo "Ceph health the is $str."
-        echo "===================================================================";echo;
-    
-    elif [ $? -ne 0 ]; then
-      echo "CepheCluster rook-tool-pod is not present. Checking again..."
-      sleep 30
-      
+        echo "===================================================================";echo; 
     else
       echo "CepheCluster health is $str. Checking again..."
       sleep 30
