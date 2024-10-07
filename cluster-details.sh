@@ -296,6 +296,7 @@ ceph_version(){
 }
 
 #function calls
+oc_version
 nodes_status
 odf_op_version
 csv_status
