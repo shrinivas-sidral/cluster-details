@@ -304,6 +304,10 @@ pods_status
 pv_status
 pvc_status
 sc_status
+storagesystem_status
+backingstore_status
+bucketclass_status
+noobaa_status
 storagecluster_status
 cephcluster_status
 ceph_version
