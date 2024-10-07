@@ -3,6 +3,17 @@ export cluster_details="cluster-details.log"
 
 echo "--------------------------- Cluster Details --------------------------" | tee $cluster_details
 
+#for oc version check
+oc_version(){
+    echo "Checking for OC version...";echo;
+    echo "$ oc get clusterversion" | tee -a $cluster_details;
+    echo ""
+    oc get clusterversion | tee -a  $cluster_details;
+    echo "-------------------------------------------------------------------" | tee -a $cluster_details
+    echo "OC version :  $(oc get clusterversion --no-headers | awk '{print $2}')"
+    echo "===================================================================";echo;
+}
+
 #for nodes checks
 nodes_status(){
     echo "Checking for nodes...";echo;
@@ -148,6 +159,84 @@ sc_status(){
         fi
     done
 }
+
+#for storagesystem status check
+storagesystem_status(){
+     echo "Checking for Storagesystem...";echo;
+    all_succeeded=false  
+    while [ "$all_succeeded" = false ]; do
+        sc=$(oc get storagesystem -n openshift-storage --no-headers)
+        if [[ -z "$sc" ]] ; then
+            echo "Storagesystem resources not found in openshift-storage namespace."
+            sleep 30
+        else
+            all_succeeded=true
+            echo "$ oc get storagesystem -n openshift-storage" | tee -a $cluster_details;
+            oc get storagesystem -n openshift-storage  | tee -a  $cluster_details;
+            echo "-------------------------------------------------------------------" | tee -a $cluster_details
+            echo "Storagesystem OK.."
+            echo "===================================================================";echo;
+        fi
+    done
+}
+
+#for backingstore status check 
+backingstore_status(){
+    echo "Checking for backingstore status...";echo;
+    all_succeeded=false  
+    while [ "$all_succeeded" = false ]; do
+    if  oc get backingstore -n openshift-storage --no-headers | awk '{print $3}' | grep -v "^Ready$" > /dev/null; then
+        echo "backingstore in Progressing state. Checking again..."
+        sleep 15
+    else
+        all_succeeded=true
+        echo "$ oc get backingstore -n openshift-storage" | tee -a $cluster_details;
+        oc get backingstore -n openshift-storage | tee -a  $cluster_details;
+        echo "-------------------------------------------------------------------" | tee -a $cluster_details
+        echo "backingstore status is Ready."
+        echo "===================================================================";echo;
+    fi
+    done
+}
+
+#for bucketclass status check
+bucketclass_status(){
+    echo "Checking for bucketclass status...";echo;
+    all_succeeded=false  
+    while [ "$all_succeeded" = false ]; do
+    if  oc get bucketclass -n openshift-storage --no-headers | awk '{print $3}' | grep -v "^Ready$" > /dev/null; then
+        echo "bucketclass in Progressing state. Checking again..."
+        sleep 15
+    else
+        all_succeeded=true
+        echo "$ oc get bucketclass -n openshift-storage" | tee -a $cluster_details;
+        oc get bucketclass -n openshift-storage | tee -a  $cluster_details;
+        echo "-------------------------------------------------------------------" | tee -a $cluster_details
+        echo "bucketclass status is Ready."
+        echo "===================================================================";echo;
+    fi
+    done
+}
+
+#for noobaa status check
+noobaa_status(){
+    echo "Checking for noobaa status...";echo;
+    all_succeeded=false  
+    while [ "$all_succeeded" = false ]; do
+    if oc get noobaa -n openshift-storage --no-headers | awk '{print $5}' | grep -v "^Ready$" > /dev/null; then
+        echo "noobaa in Progressing state. Checking again..."
+        sleep 15
+    else
+        all_succeeded=true
+        echo "$ oc get noobaa -n openshift-storage" | tee -a $cluster_details;
+        oc get noobaa -n openshift-storage | tee -a  $cluster_details;
+        echo "-------------------------------------------------------------------" | tee -a $cluster_details
+        echo "noobaa status is Ready."
+        echo "===================================================================";echo;
+    fi
+    done
+}
+
 
 #for Storagecluster status check
 storagecluster_status(){
