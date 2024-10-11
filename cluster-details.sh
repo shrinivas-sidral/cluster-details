@@ -19,7 +19,11 @@ nodes_status(){
     echo "Checking for nodes...";echo; 
     if oc get nodes --no-headers | awk '{print $2}' | grep -v "^Ready$" > /dev/null; then
         echo "Not all Nodes are in Ready state. Checking again..."
-        sleep 15  
+        echo "$ oc get nodes" | tee -a $cluster_details;
+        oc get nodes | tee -a  $cluster_details;
+        echo "-------------------------------------------------------------------" | tee -a $cluster_details
+        echo "Nodes are in not ready state."
+        echo "===================================================================";echo;  
     else
         echo "$ oc get nodes" | tee -a $cluster_details;
         oc get nodes | tee -a  $cluster_details;
@@ -44,7 +48,11 @@ csv_status(){
     echo "Checking for CSVs...";echo;
     if oc get csv -A --no-headers | awk '{print $NF}' | grep -v "^Succeeded$" > /dev/null; then
         echo "Not all CSVs are in Succeeded state. Checking again..."
-        sleep 15  
+        echo "$ oc get csv -A" | tee -a $cluster_details;
+        oc get csv -A | tee -a  $cluster_details;
+        echo "-------------------------------------------------------------------" | tee -a $cluster_details
+        echo " CSVs are in not Succeeded state."
+        echo "===================================================================";echo;
     else
         echo "$ oc get csv -A" | tee -a $cluster_details;
         oc get csv -A | tee -a  $cluster_details;
@@ -59,7 +67,12 @@ lv_pods_status(){
     echo "Checking for openshift-local-storage namespace Pods...";echo; 
     if  oc get pods -n openshift-local-storage --no-headers | awk '{ print $3 }' | grep -v "^Running$"  > /dev/null; then
         echo "Not all pods are in Running state. Checking again..."
-        sleep 15  
+           echo "$ oc get pods -n openshift-local-storage" | tee -a $cluster_details;
+        oc get pods -n openshift-local-storage | tee -a  $cluster_details;
+        echo "-------------------------------------------------------------------" | tee -a $cluster_details
+        echo " openshift-local-storage namespace Pods are in not Running state."
+        echo "===================================================================";echo;
+
     else
         echo "$ oc get pods -n openshift-local-storage" | tee -a $cluster_details;
         oc get pods -n openshift-local-storage | tee -a  $cluster_details;
@@ -74,7 +87,11 @@ pods_status(){
     echo "Checking for openshift-storage namespace Pods...";echo;
     if  oc get pods -n openshift-storage --no-headers | awk '{ print $3 }' | grep  -vE "^(Running|Completed)$" > /dev/null; then
         echo "Not all pods are in Running state. Checking again..."
-        sleep 5  
+        echo "$ oc get pods -n openshift-storage" | tee -a $cluster_details;
+        oc get pods -n openshift-storage | tee -a  $cluster_details;
+        echo "-------------------------------------------------------------------" | tee -a $cluster_details
+        echo "openshift-storage namespace Pods are in not Running state."
+        echo "===================================================================";echo;
     else
         echo "$ oc get pods -n openshift-storage" | tee -a $cluster_details;
         oc get pods -n openshift-storage | tee -a  $cluster_details;
@@ -90,7 +107,11 @@ pv_status(){
         sc=$(oc get pv -n openshift-storage --no-headers)
         if [[ -z "$sc" ]] ; then
             echo "PVs resources not found in openshift-storage namespace."
-            sleep 30
+            echo "$ oc get pv -n openshift-storage" | tee -a $cluster_details;
+            oc get pv -n openshift-storage  | tee -a  $cluster_details;
+            echo "-------------------------------------------------------------------" | tee -a $cluster_details
+            echo " PVs are not attached.."
+            echo "===================================================================";echo;
         else
             echo "$ oc get pv -n openshift-storage" | tee -a $cluster_details;
             oc get pv -n openshift-storage  | tee -a  $cluster_details;
@@ -106,7 +127,11 @@ pvc_status(){
         sc=$(oc get pvc -n openshift-storage)
         if [[ -z "$sc" ]] ; then
             echo "PVCs resources not found in openshift-storage namespace."
-            sleep 30
+            echo "$ oc get pvc -n openshift-storage" | tee -a $cluster_details;
+            oc get pvc -n openshift-storage  | tee -a  $cluster_details;
+            echo "-------------------------------------------------------------------" | tee -a $cluster_details
+            echo "All PVCs are not attached.."
+            echo "===================================================================";echo;
         else
             echo "$ oc get pvc -n openshift-storage" | tee -a $cluster_details;
             oc get pvc -n openshift-storage  | tee -a  $cluster_details;
@@ -121,7 +146,11 @@ sc_status(){
         sc=$(oc get sc -n openshift-storage --no-headers)
         if [[ -z "$sc" ]] ; then
             echo "StorageClass resources not found in openshift-storage namespace."
-            sleep 30
+            echo "$ oc get sc -n openshift-storage" | tee -a $cluster_details;
+            oc get sc -n openshift-storage  | tee -a  $cluster_details;
+            echo "-------------------------------------------------------------------" | tee -a $cluster_details
+            echo "StorageClass not OK.."
+            echo "===================================================================";echo;
         else
             echo "$ oc get sc -n openshift-storage" | tee -a $cluster_details;
             oc get sc -n openshift-storage  | tee -a  $cluster_details;
@@ -137,7 +166,11 @@ storagesystem_status(){
         sc=$(oc get storagesystem -n openshift-storage --no-headers)
         if [[ -z "$sc" ]] ; then
             echo "Storagesystem resources not found in openshift-storage namespace."
-            sleep 30
+            echo "$ oc get storagesystem -n openshift-storage" | tee -a $cluster_details;
+            oc get storagesystem -n openshift-storage  | tee -a  $cluster_details;
+            echo "-------------------------------------------------------------------" | tee -a $cluster_details
+            echo "Storagesystem not OK.."
+            echo "===================================================================";echo;
         else
             echo "$ oc get storagesystem -n openshift-storage" | tee -a $cluster_details;
             oc get storagesystem -n openshift-storage  | tee -a  $cluster_details;
@@ -152,7 +185,11 @@ backingstore_status(){
     echo "Checking for backingstore status...";echo;
     if  oc get backingstore -n openshift-storage --no-headers | awk '{print $3}' | grep -v "^Ready$" > /dev/null; then
         echo "backingstore in Progressing state. Checking again..."
-        sleep 15
+        echo "$ oc get backingstore -n openshift-storage" | tee -a $cluster_details;
+        oc get backingstore -n openshift-storage | tee -a  $cluster_details;
+        echo "-------------------------------------------------------------------" | tee -a $cluster_details
+        echo "backingstore status is not Ready."
+        echo "===================================================================";echo;
     else
         echo "$ oc get backingstore -n openshift-storage" | tee -a $cluster_details;
         oc get backingstore -n openshift-storage | tee -a  $cluster_details;
@@ -167,7 +204,11 @@ bucketclass_status(){
     echo "Checking for bucketclass status...";echo;
     if  oc get bucketclass -n openshift-storage --no-headers | awk '{print $3}' | grep -v "^Ready$" > /dev/null; then
         echo "bucketclass in Progressing state. Checking again..."
-        sleep 15
+        echo "$ oc get bucketclass -n openshift-storage" | tee -a $cluster_details;
+        oc get bucketclass -n openshift-storage | tee -a  $cluster_details;
+        echo "-------------------------------------------------------------------" | tee -a $cluster_details
+        echo "bucketclass status is not Ready."
+        echo "===================================================================";echo;
     else
         echo "$ oc get bucketclass -n openshift-storage" | tee -a $cluster_details;
         oc get bucketclass -n openshift-storage | tee -a  $cluster_details;
@@ -182,7 +223,11 @@ noobaa_status(){
     echo "Checking for noobaa status...";echo;
     if oc get noobaa -n openshift-storage --no-headers | awk '{print $5}' | grep -v "^Ready$" > /dev/null; then
         echo "noobaa in Progressing state. Checking again..."
-        sleep 15
+         echo "$ oc get noobaa -n openshift-storage" | tee -a $cluster_details;
+        oc get noobaa -n openshift-storage | tee -a  $cluster_details;
+        echo "-------------------------------------------------------------------" | tee -a $cluster_details
+        echo "noobaa status is not Ready."
+        echo "===================================================================";echo;
     else
         echo "$ oc get noobaa -n openshift-storage" | tee -a $cluster_details;
         oc get noobaa -n openshift-storage | tee -a  $cluster_details;
@@ -199,11 +244,20 @@ storagecluster_status(){
     sc=$(oc get storagecluster -n openshift-storage --no-headers)
     if  oc get storagecluster -n openshift-storage --no-headers | awk '{ print $3 }' | grep -v "^Ready$" > /dev/null; then
         echo "StorageCluster in Progressing state. Checking again..."
-        sleep 30
+        echo "$ oc get storagecluster -n openshift-storage" | tee -a $cluster_details;
+        oc get storagecluster -n openshift-storage | tee -a  $cluster_details;
+        echo "-------------------------------------------------------------------" | tee -a $cluster_details
+        echo "StorageCluster status is not Ready."
+        echo "===================================================================";echo;
 
     elif [[ -z "$sc" ]] ; then
         echo "storagecluster resources not found in openshift-storage namespace."
-        sleep 30
+        echo "$ oc get storagecluster -n openshift-storage" | tee -a $cluster_details;
+        oc get storagecluster -n openshift-storage | tee -a  $cluster_details;
+        echo "-------------------------------------------------------------------" | tee -a $cluster_details
+        echo "StorageCluster status is not Ready."
+        echo "===================================================================";echo;
+
     else
         echo "$ oc get storagecluster -n openshift-storage" | tee -a $cluster_details;
         oc get storagecluster -n openshift-storage | tee -a  $cluster_details;
@@ -217,16 +271,12 @@ cephcluster_status(){
     echo "Checking for Ceph Health...";echo;
     oc patch storagecluster ocs-storagecluster -n openshift-storage --type json --patch  '[{ "op": "replace", "path": "/spec/enableCephTools", "value": true }]' > /dev/null
     str=$(oc -n openshift-storage rsh `oc get pods -n openshift-storage | grep rook-ceph-tools |  awk '{print $1}'` ceph health | tr -d '[:space:]')
-    if [ $str == "HEALTH_OK" ]; then
         echo "$ oc get cephcluster -n openshift-storage" | tee -a $cluster_details;
         oc get cephcluster -n openshift-storage | tee -a  $cluster_details;
         echo "-------------------------------------------------------------------" | tee -a $cluster_details
         echo "Ceph health the is $str."
         echo "===================================================================";echo; 
-    else
-      echo "CepheCluster health is $str. Checking again..."
-      sleep 30
-    fi
+    
 }
 
 
@@ -243,6 +293,7 @@ ceph_version(){
 }
 
 #function calls
+oc_version
 nodes_status
 odf_op_version
 csv_status
